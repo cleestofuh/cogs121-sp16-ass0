@@ -1,24 +1,30 @@
 // Node.js Dependencies
 const http = require("http");
 const path = require("path");
+var express = require("express");
+var handlebars = require("express-handlebars");
+var mongoose = require("mongoose");
+var mongodb = require("mongodb");
+
 
 var app = express();
 
 var router = {
-    index: require("./routes/index")
+    index: require("./routes/index"),
+    message: require("./routes/message")
 };
 
 var parser = {
     body: require("body-parser")
 };
 
-// // Database Connection
-// var db = mongoose.connection;
-// mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://127.0.0.1/cogs121');
-// db.on('error', console.error.bind(console, 'Mongo DB Connection Error:'));
-// db.once('open', function(callback) {
-//     console.log("Database connected successfully.");
-// });
+//  Database Connection
+var db = mongoose.connection;
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://127.0.0.1/cogs121');
+db.on('error', console.error.bind(console, 'Mongo DB Connection Error:'));
+db.once('open', function(callback) {
+   console.log("Database connected successfully.");
+});
 
 // Middleware
 app.set("port", process.env.PORT || 3000);
@@ -31,6 +37,8 @@ app.use(parser.body.json());
 
 // Routes
 app.get("/", router.index.view);
+
+app.post("/message", router.message.send);
 
 // Start Server
 http.createServer(app).listen(app.get("port"), function() {
